@@ -1,0 +1,6 @@
+{
+  "appId": "com.yourname.golfstableford",
+  "appName": "Golf Stableford",
+  "webDir": "dist",
+  "bundledWebRuntime": false
+}

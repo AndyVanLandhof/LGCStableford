@@ -1,0 +1,439 @@
+@import url('./fonts.css');
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --font-size: 16px; /* Increased base font size for mobile readability */
+  --font-family-primary: 'Amplesoft', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  --background: #f8fdf8;
+  --foreground: #1a4d1a;
+  --card: #ffffff;
+  --card-foreground: #1a4d1a;
+  --popover: #ffffff;
+  --popover-foreground: #1a4d1a;
+  --primary: #2d7d2d;
+  --primary-foreground: #ffffff;
+  --secondary: #e8f5e8;
+  --secondary-foreground: #1a4d1a;
+  --muted: #f0f8f0;
+  --muted-foreground: #4a6b4a;
+  --accent: #66cc66;
+  --accent-foreground: #ffffff;
+  --destructive: #c53030;
+  --destructive-foreground: #ffffff;
+  --border: rgba(45, 125, 45, 0.2);
+  --input: transparent;
+  --input-background: #e8f5e8; /* Changed from #f8fdf8 to darker green for better contrast */
+  --switch-background: #90cdf4;
+  --font-weight-medium: 500;
+  --font-weight-normal: 400;
+  --ring: #66cc66;
+  --chart-1: #2d7d2d;
+  --chart-2: #3182ce;
+  --chart-3: #38a169;
+  --chart-4: #4299e1;
+  --chart-5: #48bb78;
+  --radius: 0.625rem;
+  --sidebar: #f8fdf8;
+  --sidebar-foreground: #1a4d1a;
+  --sidebar-primary: #2d7d2d;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #e8f5e8;
+  --sidebar-accent-foreground: #1a4d1a;
+  --sidebar-border: rgba(45, 125, 45, 0.2);
+  --sidebar-ring: #66cc66;
+  
+  /* Mobile-specific spacing */
+  --mobile-padding: 1rem;
+  --mobile-gap: 0.75rem;
+  --touch-target-min: 44px; /* iOS minimum touch target */
+}
+
+/* Safe area variables for iPhone notch/Dynamic Island */
+@supports (top: env(safe-area-inset-top)) {
+  :root {
+    --safe-area-top: env(safe-area-inset-top);
+    --safe-area-bottom: env(safe-area-inset-bottom);
+    --safe-area-left: env(safe-area-inset-left);
+    --safe-area-right: env(safe-area-inset-right);
+  }
+}
+
+.dark {
+  --background: #0f2f0f;
+  --foreground: #e8f5e8;
+  --card: #1a4d1a;
+  --card-foreground: #e8f5e8;
+  --popover: #1a4d1a;
+  --popover-foreground: #e8f5e8;
+  --primary: #66cc66;
+  --primary-foreground: #0f2f0f;
+  --secondary: #2d4d2d;
+  --secondary-foreground: #e8f5e8;
+  --muted: #2d4d2d;
+  --muted-foreground: #90cdf4;
+  --accent: #38a169;
+  --accent-foreground: #ffffff;
+  --destructive: #fc8181;
+  --destructive-foreground: #0f2f0f;
+  --border: rgba(102, 204, 102, 0.3);
+  --input: #2d4d2d;
+  --ring: #66cc66;
+  --font-weight-medium: 500;
+  --font-weight-normal: 400;
+  --chart-1: #66cc66;
+  --chart-2: #4299e1;
+  --chart-3: #48bb78;
+  --chart-4: #63b3ed;
+  --chart-5: #68d391;
+  --sidebar: #1a4d1a;
+  --sidebar-foreground: #e8f5e8;
+  --sidebar-primary: #66cc66;
+  --sidebar-primary-foreground: #0f2f0f;
+  --sidebar-accent: #2d4d2d;
+  --sidebar-accent-foreground: #e8f5e8;
+  --sidebar-border: rgba(102, 204, 102, 0.3);
+  --sidebar-ring: #66cc66;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-input-background: var(--input-background);
+  --color-switch-background: var(--switch-background);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-family-primary);
+    background: linear-gradient(135deg, #f8fdf8 0%, #e8f5e8 100%);
+    /* Prevent text selection for better mobile experience */
+    -webkit-touch-callout: none;
+    -webkit-text-size-adjust: 100%;
+    /* Smooth scrolling for mobile */
+    -webkit-overflow-scrolling: touch;
+    /* Safe area padding */
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+
+  /* Prevent zoom on iOS inputs */
+  input[type="number"],
+  input[type="text"],
+  input[type="email"],
+  input[type="tel"],
+  input[type="date"],
+  select,
+  textarea {
+    font-size: 16px !important;
+    transform: translateZ(0);
+  }
+}
+
+/**
+ * Mobile-optimized typography with better touch targets
+ */
+@layer base {
+  :where(:not(:has([class*=" text-"]), :not(:has([class^="text-"])))) {
+    h1 {
+      font-family: var(--font-family-primary);
+      font-size: clamp(1.5rem, 5vw, 2.25rem); /* Responsive sizing */
+      font-weight: var(--font-weight-medium);
+      line-height: 1.2;
+      color: var(--color-foreground);
+    }
+
+    h2 {
+      font-family: var(--font-family-primary);
+      font-size: clamp(1.25rem, 4vw, 1.875rem);
+      font-weight: var(--font-weight-medium);
+      line-height: 1.3;
+      color: var(--color-foreground);
+    }
+
+    h3 {
+      font-family: var(--font-family-primary);
+      font-size: clamp(1.125rem, 3.5vw, 1.5rem);
+      font-weight: var(--font-weight-medium);
+      line-height: 1.4;
+      color: var(--color-foreground);
+    }
+
+    h4 {
+      font-family: var(--font-family-primary);
+      font-size: clamp(1rem, 3vw, 1.25rem);
+      font-weight: var(--font-weight-medium);
+      line-height: 1.4;
+      color: var(--color-foreground);
+    }
+
+    p {
+      font-family: var(--font-family-primary);
+      font-size: clamp(1rem, 2.5vw, 1.125rem);
+      font-weight: var(--font-weight-normal);
+      line-height: 1.5;
+      color: var(--color-foreground);
+    }
+
+    label {
+      font-family: var(--font-family-primary);
+      font-size: clamp(1rem, 2.5vw, 1.125rem);
+      font-weight: var(--font-weight-medium);
+      line-height: 1.4;
+      color: var(--color-foreground);
+    }
+
+    button {
+      font-family: var(--font-family-primary);
+      font-size: clamp(1rem, 2.5vw, 1.125rem);
+      font-weight: var(--font-weight-medium);
+      line-height: 1.4;
+      min-height: var(--touch-target-min);
+      touch-action: manipulation;
+    }
+
+    input {
+      font-family: var(--font-family-primary);
+      font-size: 16px; /* Prevent zoom on iOS */
+      font-weight: var(--font-weight-normal);
+      line-height: 1.4;
+      min-height: var(--touch-target-min);
+    }
+  }
+}
+
+html {
+  font-size: var(--font-size);
+  font-family: var(--font-family-primary);
+  /* Better mobile scrolling */
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Mobile-optimized button styling */
+button,
+.btn {
+  min-height: var(--touch-target-min);
+  min-width: var(--touch-target-min);
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Mobile-friendly interactive elements */
+a, 
+button, 
+[role="button"],
+.clickable {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: rgba(45, 125, 45, 0.1);
+  transition: all 0.2s ease;
+}
+
+/* Active states for mobile */
+a:active,
+button:active,
+[role="button"]:active {
+  transform: scale(0.98);
+  opacity: 0.8;
+}
+
+/* Safe area utilities */
+.safe-top {
+  padding-top: max(1rem, env(safe-area-inset-top));
+}
+
+.safe-bottom {
+  padding-bottom: max(1rem, env(safe-area-inset-bottom));
+}
+
+.safe-left {
+  padding-left: max(1rem, env(safe-area-inset-left));
+}
+
+.safe-right {
+  padding-right: max(1rem, env(safe-area-inset-right));
+}
+
+.safe-all {
+  padding-top: max(1rem, env(safe-area-inset-top));
+  padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  padding-left: max(1rem, env(safe-area-inset-left));
+  padding-right: max(1rem, env(safe-area-inset-right));
+}
+
+/* Mobile-optimized sticky headers */
+.mobile-header {
+  position: sticky;
+  top: env(safe-area-inset-top);
+  z-index: 50;
+  background: rgba(248, 253, 248, 0.95);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* Golf course inspired gradient backgrounds */
+.golf-gradient {
+  background: linear-gradient(135deg, #2d7d2d 0%, #38a169 50%, #3182ce 100%);
+}
+
+.fairway-green {
+  background: linear-gradient(45deg, #38a169 0%, #48bb78 100%);
+}
+
+.water-hazard {
+  background: linear-gradient(45deg, #3182ce 0%, #4299e1 100%);
+}
+
+/* Mobile-responsive spacing utilities */
+@media (max-width: 640px) {
+  .mobile-p-4 {
+    padding: 1rem;
+  }
+  
+  .mobile-gap-3 {
+    gap: 0.75rem;
+  }
+  
+  .mobile-space-y-4 > * + * {
+    margin-top: 1rem;
+  }
+  
+  .mobile-text-sm {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+  }
+}
+
+/* iPhone 16 Pro specific optimizations */
+@media (min-width: 390px) and (max-width: 430px) and (min-height: 840px) {
+  :root {
+    --mobile-padding: 1.25rem;
+    --mobile-gap: 1rem;
+  }
+  
+  .mobile-iphone-padding {
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+  }
+}
+
+/* PDF-specific styling for clean output */
+.pdf-content {
+  background: white !important;
+  color: #000 !important;
+}
+
+.pdf-content * {
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+
+/* Ensure all text is visible in PDF */
+.pdf-content .text-muted-foreground {
+  color: #666 !important;
+}
+
+.pdf-content .text-primary {
+  color: #2d7d2d !important;
+}
+
+.pdf-content .bg-secondary {
+  background-color: #f5f5f5 !important;
+}
+
+.pdf-content .border-border {
+  border-color: #ddd !important;
+}
+
+.pdf-content .border-primary {
+  border-color: #2d7d2d !important;
+}
+
+/* Make sure badges are visible in PDF */
+.pdf-content .bg-destructive {
+  background-color: #dc2626 !important;
+  color: white !important;
+}
+
+.pdf-content .bg-green-600 {
+  background-color: #059669 !important;
+  color: white !important;
+}
+
+.pdf-content .text-green-600 {
+  color: #059669 !important;
+}
+
+.pdf-content .text-blue-600 {
+  color: #2563eb !important;
+}
+
+.pdf-content .text-orange-500 {
+  color: #f97316 !important;
+}
+
+.pdf-content .text-red-600 {
+  color: #dc2626 !important;
+}
+
+/* Font display utilities */
+.font-amplesoft {
+  font-family: var(--font-family-primary);
+}
+
+/* Smooth transitions for better mobile UX */
+* {
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+/* Prevent overscroll on iOS */
+html,
+body {
+  overscroll-behavior: none;
+}
+
+/* Better scroll behavior on mobile */
+.scroll-smooth {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
