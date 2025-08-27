@@ -244,9 +244,9 @@ export function PlayerSetup({
         </div>
       </div>
 
-      {/* Starting Hole Selection */}
+      {/* Starting Tee Selection */}
       <div className="space-y-3">
-        <Label htmlFor="start-hole">Starting Hole</Label>
+        <Label htmlFor="start-hole">Starting Tee</Label>
         <div className="flex gap-2">
           <Button
             variant={startHoleIndex === 0 ? 'default' : 'outline'}
@@ -263,7 +263,7 @@ export function PlayerSetup({
             Hole 10
           </Button>
         </div>
-        <p className="text-xs text-muted-foreground">Choose which hole to start on.</p>
+        <p className="text-xs text-muted-foreground">Choose which tee to start on.</p>
       </div>
 
       {/* Add Player */}
