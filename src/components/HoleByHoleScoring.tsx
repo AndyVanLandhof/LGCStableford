@@ -498,6 +498,13 @@ export function HoleByHoleScoring({
                     All players tied with {sixPointsStatus.totalSixPoints} points after {currentHoleIndex} hole{currentHoleIndex > 1 ? 's' : ''}
                   </div>
                 </div>
+              ) : sixPointsStatus.isTwoWayTie ? (
+                <div className="space-y-2">
+                  <div className="text-lg font-semibold text-accent">Two-Way Tie</div>
+                  <div className="text-sm text-muted-foreground">
+                    {sixPointsStatus.tiedPlayerNames?.join(' & ')} tied with {sixPointsStatus.totalSixPoints} points after {currentHoleIndex} hole{currentHoleIndex > 1 ? 's' : ''}
+                  </div>
+                </div>
               ) : (
                 <div className="space-y-2">
                   <div className="text-lg font-semibold text-accent">

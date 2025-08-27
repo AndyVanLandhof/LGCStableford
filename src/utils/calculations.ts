@@ -341,6 +341,9 @@ export interface SixPointsStatus {
   totalSixPoints: number;
   standings: { playerId: string; playerName: string; points: number }[];
   isThreeWayTie: boolean;
+  // New: two-way tie detection
+  isTwoWayTie?: boolean;
+  tiedPlayerNames?: string[];
 }
 
 /** 
@@ -493,16 +496,22 @@ export function calculateSixPointsStatus(players: Player[], currentHoleIndex: nu
     points: player.totalSixPoints || 0
   })).sort((a, b) => b.points - a.points);
 
-  const leader = standings[0];
-  const isThreeWayTie = standings[0].points === standings[1].points && 
-                       standings[1].points === standings[2].points;
+  const top = standings[0];
+  const second = standings[1];
+  const third = standings[2];
+
+  const isThreeWayTie = top.points === second.points && second.points === third.points;
+  const isTwoWayTie = !isThreeWayTie && top.points === second.points;
+  const tiedPlayerNames = isTwoWayTie ? [top.playerName, second.playerName] : undefined;
 
   return {
-    leadingPlayerId: leader.playerId,
-    leadingPlayerName: leader.playerName,
-    totalSixPoints: leader.points,
+    leadingPlayerId: isThreeWayTie || isTwoWayTie ? null : top.playerId,
+    leadingPlayerName: isThreeWayTie ? "Three-Way Tie" : isTwoWayTie ? "Two-Way Tie" : top.playerName,
+    totalSixPoints: top.points,
     standings,
-    isThreeWayTie
+    isThreeWayTie,
+    isTwoWayTie,
+    tiedPlayerNames
   };
 }
 

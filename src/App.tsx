@@ -509,6 +509,10 @@ export default function App() {
                   </div>
                   {sixPointsResult.isThreeWayTie ? (
                     <p className="text-lg text-accent font-semibold">Three-Way Tie</p>
+                  ) : sixPointsResult.isTwoWayTie ? (
+                    <p className="text-lg text-accent font-semibold">
+                      Two-Way Tie: {sixPointsResult.tiedPlayerNames?.join(' & ')}
+                    </p>
                   ) : (
                     <p className="text-lg text-accent font-semibold">
                       {sixPointsResult.leadingPlayerName} wins with {sixPointsResult.totalSixPoints} six points
