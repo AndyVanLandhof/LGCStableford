@@ -67,8 +67,11 @@ export const generatePDF = async (players: Player[], selectedTeeBox: TeeBox, gam
       throw new Error('Canvas has no content - check if scorecard is visible');
     }
 
-    // Create PDF in landscape format
-    const pdf = new jsPDF('l', 'mm', 'a4');
+    // Create PDF in portrait format with 3 pages:
+    // Page 1: Leaderboard + 18-hole summary + club info (from .pdf-page1)
+    // Page 2: Front 9 table (from .pdf-front9)
+    // Page 3: Back 9 table (from .pdf-back9)
+    const pdf = new jsPDF('p', 'mm', 'a4');
     const pdfWidth = pdf.internal.pageSize.getWidth(); // 210mm
     const pdfHeight = pdf.internal.pageSize.getHeight(); // 297mm
     
@@ -91,28 +94,33 @@ export const generatePDF = async (players: Player[], selectedTeeBox: TeeBox, gam
 
     console.log('Adding image to PDF...', { imgWidth, imgHeight, xOffset, yOffset });
 
-    // Add page 1: Split content into two halves if very tall, else fit once
+    // Page 1: .pdf-page1 container
     pdf.addImage(canvas.toDataURL('image/png', 0.95), 'PNG', xOffset, yOffset, imgWidth, imgHeight, undefined, 'MEDIUM');
 
-    // Add page 2 for rules/legend by re-capturing only the legend/summary section if present,
-    // otherwise just duplicate a lighter footer section.
-    const legendSection = document.querySelector('.pdf-page2') as HTMLElement;
-    if (legendSection) {
-      await new Promise(resolve => setTimeout(resolve, 200));
-      const legendCanvas = await html2canvas(legendSection, { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
-      const legendWidth = (legendCanvas.width / 2) * scale;
-      const legendHeight = (legendCanvas.height / 2) * scale;
-      const lx = margin + (availableWidth - legendWidth) / 2;
-      const ly = margin + (availableHeight - legendHeight) / 2;
-      pdf.addPage('a4', 'l');
-      pdf.addImage(legendCanvas.toDataURL('image/png', 0.95), 'PNG', lx, ly, legendWidth, legendHeight, undefined, 'MEDIUM');
-    } else {
-      // Fallback: add a blank page with note
-      pdf.addPage('a4', 'l');
-      pdf.setFontSize(14);
-      pdf.text('Notes and Rules', pdfWidth / 2, margin + 10, { align: 'center' });
-      pdf.setFontSize(10);
-      pdf.text('Stableford Scoring and notes available in the app.', margin, margin + 20);
+    // Page 2: Front 9 section
+    const front = document.querySelector('.pdf-front9') as HTMLElement;
+    if (front) {
+      await new Promise(resolve => setTimeout(resolve, 100));
+      const frontCanvas = await html2canvas(front, { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
+      const fw = (frontCanvas.width / 2) * scale;
+      const fh = (frontCanvas.height / 2) * scale;
+      const fx = margin + (availableWidth - fw) / 2;
+      const fy = margin + (availableHeight - fh) / 2;
+      pdf.addPage('a4', 'p');
+      pdf.addImage(frontCanvas.toDataURL('image/png', 0.95), 'PNG', fx, fy, fw, fh, undefined, 'MEDIUM');
+    }
+
+    // Page 3: Back 9 section
+    const back = document.querySelector('.pdf-back9') as HTMLElement;
+    if (back) {
+      await new Promise(resolve => setTimeout(resolve, 100));
+      const backCanvas = await html2canvas(back, { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
+      const bw = (backCanvas.width / 2) * scale;
+      const bh = (backCanvas.height / 2) * scale;
+      const bx = margin + (availableWidth - bw) / 2;
+      const by = margin + (availableHeight - bh) / 2;
+      pdf.addPage('a4', 'p');
+      pdf.addImage(backCanvas.toDataURL('image/png', 0.95), 'PNG', bx, by, bw, bh, undefined, 'MEDIUM');
     }
 
     // Generate filename

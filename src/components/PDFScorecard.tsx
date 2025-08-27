@@ -223,39 +223,35 @@ export function PDFScorecard({ players, holes, selectedTeeBox, gameDate }: PDFSc
 
   return (
     <div className="max-w-full mx-auto bg-white text-black p-6" style={{ fontSize: '14px', lineHeight: '1.4' }}>
-      {/* Header */}
-      <div className="text-center mb-6 border-b-2 border-gray-400 pb-4">
-        <h1 className="text-2xl font-bold text-green-800 mb-2">Liphook Golf Club</h1>
-        <h2 className="text-lg font-semibold mb-2">Stableford Scorecard</h2>
-        <div className="text-sm space-y-1">
-          <div>Date: {date}</div>
-          <div>Tee Box: {selectedTeeBox.name} (Course Rating: {selectedTeeBox.courseRating}, Slope: {selectedTeeBox.slopeRating})</div>
-          <div>Par: 70 • Total Yardage: {totalYardage} yards</div>
+      {/* Page 1: Header + Players + 18-Hole Summary */}
+      <div className="pdf-page1">
+        {/* Header */}
+        <div className="text-center mb-6 border-b-2 border-gray-400 pb-4">
+          <h1 className="text-2xl font-bold text-green-800 mb-2">Liphook Golf Club</h1>
+          <h2 className="text-lg font-semibold mb-2">Stableford Scorecard</h2>
+          <div className="text-sm space-y-1">
+            <div>Date: {displayDate}</div>
+            <div>Tee Box: {selectedTeeBox.name} (Course Rating: {selectedTeeBox.courseRating}, Slope: {selectedTeeBox.slopeRating})</div>
+            <div>Par: 70 • Total Yardage: {totalYardage} yards</div>
+          </div>
         </div>
-      </div>
 
-      {/* Player Names */}
-      <div className="mb-6">
-        <h3 className="font-semibold mb-2">Players:</h3>
-        <div className="grid grid-cols-2 gap-2 text-sm">
-          {players.map((player, index) => (
-            <div key={player.id}>
-              {index + 1}. {player.name} (Handicap Index: {player.handicapIndex}, Course Handicap: {player.courseHandicap})
-            </div>
-          ))}
+        {/* Player Names */}
+        <div className="mb-6">
+          <h3 className="font-semibold mb-2">Players:</h3>
+          <div className="grid grid-cols-2 gap-2 text-sm">
+            {players.map((player, index) => (
+              <div key={player.id}>
+                {index + 1}. {player.name} (Handicap Index: {player.handicapIndex}, Course Handicap: {player.courseHandicap})
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
 
-      {/* Two-column layout for Front 9 and Back 9 */}
-      <div className="flex gap-6 mb-6">
-        {renderNineColumn(frontNine, 0, "Front 9")}
-        {renderNineColumn(backNine, 9, "Back 9")}
-      </div>
-
-      {/* Overall Totals */}
-      <div className="border-t-2 border-gray-400 pt-4">
-        <h3 className="font-semibold mb-3 text-center">18-Hole Summary</h3>
-        <table className="w-full text-sm border-collapse">
+        {/* 18-Hole Summary */}
+        <div className="border-t-2 border-gray-400 pt-4">
+          <h3 className="font-semibold mb-3 text-center">18-Hole Summary</h3>
+          <table className="w-full text-sm border-collapse">
           <thead>
             <tr className="border-b-2 border-gray-400">
               <th className="text-left p-2 border-r border-gray-300">Player</th>
@@ -287,33 +283,18 @@ export function PDFScorecard({ players, holes, selectedTeeBox, gameDate }: PDFSc
                 );
               })}
           </tbody>
-        </table>
+          </table>
+        </div>
       </div>
 
-      {/* Legend */}
-      <div className="mt-6 text-xs border-t border-gray-300 pt-4">
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <h4 className="font-semibold mb-2">Stableford Scoring:</h4>
-            <div className="space-y-1">
-              <div>Net Double Eagle (-3): 5 pts</div>
-              <div>Net Eagle (-2): 4 pts</div>
-              <div>Net Birdie (-1): 3 pts</div>
-              <div>Net Par (0): 2 pts</div>
-              <div>Net Bogey (+1): 1 pt</div>
-              <div>Net Double Bogey (+2): 0 pts</div>
-            </div>
-          </div>
-          <div>
-            <h4 className="font-semibold mb-2">Notes:</h4>
-            <div className="space-y-1">
-              <div>• Course Handicap = (Handicap Index × Slope) ÷ 113</div>
-              <div>• Stroke allocations shown with • symbol</div>
-              <div>• USGA Net Double Bogey Rule applied</div>
-              <div>• Maximum score = Par + Strokes + 2</div>
-            </div>
-          </div>
-        </div>
+      {/* Page 2: Front 9 only */}
+      <div className="pdf-front9 mt-6">
+        {renderNineColumn(frontNine, 0, "Front 9")}
+      </div>
+
+      {/* Page 3: Back 9 only */}
+      <div className="pdf-back9 mt-6">
+        {renderNineColumn(backNine, 9, "Back 9")}
       </div>
     </div>
   );

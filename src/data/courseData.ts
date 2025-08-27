@@ -16,7 +16,7 @@ export const liphookCourseData: CourseData = {
     { number: 3, name: "Mitland", par: 3, handicapIndex: 13, yardages: { yellow: 117, white: 142, blue: 142 } },
     { number: 4, name: "High View", par: 4, handicapIndex: 1, yardages: { yellow: 439, white: 460, blue: 460 } },
     { number: 5, name: "The Black Fox", par: 5, handicapIndex: 17, yardages: { yellow: 469, white: 489, blue: 499 } },
-    { number: 6, name: "Ripsley", par: 4, handicapIndex: 5, yardages: { yellow: 396, white: 420, blue: 456 } },
+    { number: 6, name: "Ripley", par: 4, handicapIndex: 5, yardages: { yellow: 396, white: 420, blue: 456 } },
     { number: 7, name: "Two Counties", par: 5, handicapIndex: 15, yardages: { yellow: 478, white: 501, blue: 501 } },
     { number: 8, name: "The Pulpit", par: 3, handicapIndex: 11, yardages: { yellow: 162, white: 169, blue: 176 } },
     { number: 9, name: "Waterside", par: 4, handicapIndex: 9, yardages: { yellow: 355, white: 363, blue: 363 } },
