@@ -18,6 +18,8 @@ interface PlayerSetupProps {
   onTeeBoxChange: (teeBox: TeeBox) => void;
   gameDate: string;
   onDateChange: (date: string) => void;
+  startHoleIndex: number; // 0-based: 0 => Hole 1, 9 => Hole 10
+  onStartHoleChange: (index: number) => void;
   onStartGame: () => void;
 }
 
@@ -29,6 +31,8 @@ export function PlayerSetup({
   onTeeBoxChange,
   gameDate,
   onDateChange,
+  startHoleIndex,
+  onStartHoleChange,
   onStartGame 
 }: PlayerSetupProps) {
   const [newPlayerName, setNewPlayerName] = useState('');
@@ -238,6 +242,28 @@ export function PlayerSetup({
         <div className="text-sm text-muted-foreground">
           Course Rating: {selectedTeeBox.courseRating} | Slope: {selectedTeeBox.slopeRating}
         </div>
+      </div>
+
+      {/* Starting Hole Selection */}
+      <div className="space-y-3">
+        <Label htmlFor="start-hole">Starting Hole</Label>
+        <div className="flex gap-2">
+          <Button
+            variant={startHoleIndex === 0 ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => onStartHoleChange(0)}
+          >
+            Hole 1
+          </Button>
+          <Button
+            variant={startHoleIndex === 9 ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => onStartHoleChange(9)}
+          >
+            Hole 10
+          </Button>
+        </div>
+        <p className="text-xs text-muted-foreground">Choose which hole to start on.</p>
       </div>
 
       {/* Add Player */}

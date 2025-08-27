@@ -27,6 +27,7 @@ interface HoleByHoleScoringProps {
   selectedTeeBox: TeeBox;
   currentHoleIndex: number;
   setCurrentHoleIndex: (index: number) => void;
+  startHoleIndex: number;
   onFinishRound: () => void;
   onShowScorecard: () => void;
 }
@@ -38,6 +39,7 @@ export function HoleByHoleScoring({
   selectedTeeBox,
   currentHoleIndex,
   setCurrentHoleIndex,
+  startHoleIndex,
   onFinishRound,
   onShowScorecard 
 }: HoleByHoleScoringProps) {
@@ -63,8 +65,10 @@ export function HoleByHoleScoring({
     setHoleConfirmed(hasExistingScores);
   }, [currentHoleIndex, players]);
 
-  const isLastHole = currentHoleIndex === 17;
-  const progress = ((currentHoleIndex + 1) / 18) * 100;
+  const lastHoleIndex = (startHoleIndex + 17) % 18;
+  const isLastHole = currentHoleIndex === lastHoleIndex;
+  const rotationOffset = (currentHoleIndex - startHoleIndex + 18) % 18; // 0..17
+  const progress = ((rotationOffset + 1) / 18) * 100;
 
   // Get yardage for current tee box
   const getCurrentYardage = () => {
@@ -139,7 +143,7 @@ export function HoleByHoleScoring({
         if (isLastHole) {
           onFinishRound();
         } else {
-          setCurrentHoleIndex(currentHoleIndex + 1);
+          setCurrentHoleIndex((currentHoleIndex + 1) % 18);
           setHoleScores({});
           setHoleConfirmed(false);
           setIsAdvancing(false);
@@ -152,13 +156,13 @@ export function HoleByHoleScoring({
     if (isLastHole) {
       onFinishRound();
     } else {
-      setCurrentHoleIndex(currentHoleIndex + 1);
+      setCurrentHoleIndex((currentHoleIndex + 1) % 18);
     }
   };
 
   const previousHole = () => {
-    if (currentHoleIndex > 0) {
-      setCurrentHoleIndex(currentHoleIndex - 1);
+    if (currentHoleIndex !== startHoleIndex) {
+      setCurrentHoleIndex((currentHoleIndex + 17) % 18);
     }
   };
 

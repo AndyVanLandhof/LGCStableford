@@ -24,6 +24,7 @@ export default function App() {
   const [selectedTeeBox, setSelectedTeeBox] = useState<TeeBox>(liphookCourseData.teeBoxes[1]); // Default to White tees
   const [currentView, setCurrentView] = useState<AppView>('courseSelection');
   const [currentHoleIndex, setCurrentHoleIndex] = useState<number>(0); // Add current hole state
+  const [startHoleIndex, setStartHoleIndex] = useState<number>(0); // 0-based: 0 for Hole 1, 9 for Hole 10
   const [gameDate, setGameDate] = useState<string>(new Date().toISOString().split('T')[0]); // Today's date in YYYY-MM-DD format
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [showInstallPrompt, setShowInstallPrompt] = useState(false);
@@ -71,6 +72,7 @@ export default function App() {
       const savedView = localStorage.getItem(getStorageKey('view'));
       const savedDate = localStorage.getItem(getStorageKey('date'));
       const savedHoleIndex = localStorage.getItem(getStorageKey('currentHole'));
+      const savedStartHole = localStorage.getItem(getStorageKey('startHole'));
       
       if (savedPlayers) {
         try {
@@ -104,6 +106,13 @@ export default function App() {
           setCurrentHoleIndex(JSON.parse(savedHoleIndex));
         } catch (e) {
           console.error('Error loading hole index:', e);
+        }
+      }
+      if (savedStartHole) {
+        try {
+          setStartHoleIndex(JSON.parse(savedStartHole));
+        } catch (e) {
+          console.error('Error loading start hole:', e);
         }
       }
 
@@ -154,6 +163,13 @@ export default function App() {
     }
   }, [gameDate, selectedCourse]);
 
+  // Save start hole to localStorage
+  useEffect(() => {
+    if (selectedCourse) {
+      localStorage.setItem(getStorageKey('startHole'), JSON.stringify(startHoleIndex));
+    }
+  }, [startHoleIndex, selectedCourse]);
+
   const selectCourse = (course: CourseType) => {
     setSelectedCourse(course);
     setCurrentView('setup');
@@ -179,6 +195,7 @@ export default function App() {
     }));
     
     setPlayers(updatedPlayers);
+    setCurrentHoleIndex(startHoleIndex);
     setCurrentView('scoring');
   };
 
@@ -328,6 +345,8 @@ export default function App() {
                 onTeeBoxChange={setSelectedTeeBox}
                 gameDate={gameDate}
                 onDateChange={setGameDate}
+                startHoleIndex={startHoleIndex}
+                onStartHoleChange={setStartHoleIndex}
                 onStartGame={startGame}
               />
             </Card>
@@ -382,6 +401,7 @@ export default function App() {
             selectedTeeBox={selectedTeeBox}
             currentHoleIndex={currentHoleIndex}
             setCurrentHoleIndex={setCurrentHoleIndex}
+            startHoleIndex={startHoleIndex}
             onFinishRound={finishRound}
             onShowScorecard={viewScorecardFromScoring}
           />
