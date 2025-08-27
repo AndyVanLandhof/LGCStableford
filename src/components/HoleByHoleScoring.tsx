@@ -482,8 +482,8 @@ export function HoleByHoleScoring({
       })()}
 
       {/* Six Points Status (only for 3 players) */}
-      {players.length === 3 && currentHoleIndex > 0 && (() => {
-        const sixPointsStatus = calculateSixPointsStatus(players, currentHoleIndex);
+      {players.length === 3 && rotationOffset > 0 && (() => {
+        const sixPointsStatus = calculateSixPointsStatus(players, rotationOffset);
         
         return (
           <Card className="p-4 bg-card/95 backdrop-blur-sm shadow-lg border-2 border-accent/20">
@@ -497,14 +497,14 @@ export function HoleByHoleScoring({
                 <div className="space-y-2">
                   <div className="text-lg font-semibold text-accent">Three-Way Tie</div>
                   <div className="text-sm text-muted-foreground">
-                    All players tied with {sixPointsStatus.totalSixPoints} points after {currentHoleIndex} hole{currentHoleIndex > 1 ? 's' : ''}
+                    All players tied with {sixPointsStatus.totalSixPoints} points after {rotationOffset} hole{rotationOffset > 1 ? 's' : ''}
                   </div>
                 </div>
               ) : sixPointsStatus.isTwoWayTie ? (
                 <div className="space-y-2">
                   <div className="text-lg font-semibold text-accent">Two-Way Tie</div>
                   <div className="text-sm text-muted-foreground">
-                    {sixPointsStatus.tiedPlayerNames?.join(' & ')} tied with {sixPointsStatus.totalSixPoints} points after {currentHoleIndex} hole{currentHoleIndex > 1 ? 's' : ''}
+                    {sixPointsStatus.tiedPlayerNames?.join(' & ')} tied with {sixPointsStatus.totalSixPoints} points after {rotationOffset} hole{rotationOffset > 1 ? 's' : ''}
                   </div>
                 </div>
               ) : (
@@ -513,7 +513,7 @@ export function HoleByHoleScoring({
                     {sixPointsStatus.leadingPlayerName} Leading
                   </div>
                   <div className="text-sm text-muted-foreground">
-                    {sixPointsStatus.totalSixPoints} six points after {currentHoleIndex} hole{currentHoleIndex > 1 ? 's' : ''}
+                    {sixPointsStatus.totalSixPoints} six points after {rotationOffset} hole{rotationOffset > 1 ? 's' : ''}
                   </div>
                 </div>
               )}
@@ -539,12 +539,14 @@ export function HoleByHoleScoring({
             </div>
 
             {/* Show six points for last 3 holes */}
-            {currentHoleIndex >= 1 && (
+            {rotationOffset >= 1 && (
               <div className="mt-3 pt-3 border-t border-accent/20">
                 <div className="text-xs text-muted-foreground mb-2 text-center">Recent Holes</div>
                 <div className="space-y-1">
-                  {Array.from({ length: Math.min(3, currentHoleIndex) }, (_, i) => {
-                    const holeIndex = currentHoleIndex - Math.min(3, currentHoleIndex) + i;
+                  {Array.from({ length: Math.min(3, rotationOffset) }, (_, i) => {
+                    const n = Math.min(3, rotationOffset);
+                    const offset = rotationOffset - n + i;
+                    const holeIndex = (startHoleIndex + offset) % 18;
                     const holeNumber = holes[holeIndex].number;
                     const sixPointsResult = calculateSixPointsForHole(players, holeIndex, holes);
                     
