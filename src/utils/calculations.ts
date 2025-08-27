@@ -351,27 +351,39 @@ export function allocateSixPointsFromPlaces(places: number[]): number[] {
   if (!Array.isArray(places) || places.length !== 3) {
     throw new Error("places must be an array of length 3");
   }
-  const sorted = [...places].sort((a, b) => a - b);
-  let points = [0, 0, 0];
 
-  // Cases, by multiset of places
-  if (sorted[0] === 1 && sorted[1] === 1 && sorted[2] === 1) {
-    // 2–2–2 (three-way tie)
-    points = [2, 2, 2];
-  } else if (sorted[0] === 1 && sorted[1] === 1 && sorted[2] === 3) {
-    // 3–3–0 (two joint winners, one loser)
-    points = places.map(p => (p === 1 ? 3 : 0));
-  } else if (sorted[0] === 1 && sorted[1] === 2 && sorted[2] === 2) {
-    // 4–1–1 (single winner, tie for second)
-    points = places.map(p => (p === 1 ? 4 : 1));
-  } else if (sorted[0] === 1 && sorted[1] === 2 && sorted[2] === 3) {
-    // 4–2–0 (single winner, clear runner-up, clear last)
-    const map = { 1: 4, 2: 2, 3: 0 };
-    points = places.map(p => map[p as keyof typeof map] ?? 0);
-  } else {
-    throw new Error(`Invalid placements pattern: ${JSON.stringify(places)}`);
+  // Normalize input: places are 1=best, 2=next, 3=last.
+  // Our tie mapping from placesFromStrokes can yield [1,1,2] for two-way tie for first
+  // (since only two unique values exist). Treat [1,1,2] same as [1,1,3].
+
+  const counts: Record<number, number> = { 1: 0, 2: 0, 3: 0 };
+  places.forEach(p => { counts[p] = (counts[p] ?? 0) + 1; });
+
+  // Three-way tie
+  if (counts[1] === 3) {
+    return [2, 2, 2];
   }
-  return points;
+
+  // Two-way tie for first: [1,1,2] (or [1,1,3] depending on mapper)
+  if (counts[1] === 2) {
+    // 3–3–0
+    return places.map(p => (p === 1 ? 3 : 0));
+  }
+
+  // Single winner (one place=1)
+  if (counts[1] === 1) {
+    // Check tie for second: typically [1,2,2]
+    if (counts[2] === 2) {
+      // 4–1–1
+      return places.map(p => (p === 1 ? 4 : 1));
+    }
+    // Clear 1-2-3: [1,2,3] or mapper-equivalent
+    const map: Record<number, number> = { 1: 4, 2: 2, 3: 0 };
+    return places.map(p => map[p] ?? 0);
+  }
+
+  // Fallback (shouldn't happen): distribute evenly
+  return [2, 2, 2];
 }
 
 /** Normalize totals so the lowest becomes 0. */
