@@ -6,25 +6,25 @@ export const generatePDF = async (players: Player[], selectedTeeBox: TeeBox, gam
   try {
     console.log('Starting PDF generation...');
     
-    // Find the scorecard content area
-    const element = document.querySelector('.pdf-content') as HTMLElement;
-    if (!element) {
-      console.error('PDF content area (.pdf-content) not found');
-      alert('Could not find scorecard content. Please make sure you are on the Full Scorecard page.');
+    // Find specific sections to render as separate PDF pages
+    const page1El = document.querySelector('.pdf-page1') as HTMLElement;
+    const frontEl = document.querySelector('.pdf-front9') as HTMLElement;
+    const backEl = document.querySelector('.pdf-back9') as HTMLElement;
+    if (!page1El) {
+      console.error('PDF page 1 element (.pdf-page1) not found');
+      alert('Could not find PDF sections. Please open the Full Scorecard page.');
       return;
     }
 
-    console.log('Found PDF content element:', element);
-
     // Store original styles
-    const originalStyle = element.style.cssText;
+    const originalStyle = page1El.style.cssText;
     const originalBodyOverflow = document.body.style.overflow;
     
     // Prepare element for capture
-    element.style.position = 'relative';
-    element.style.zIndex = '9999';
-    element.style.backgroundColor = '#ffffff';
-    element.style.minWidth = '800px';
+    page1El.style.position = 'relative';
+    page1El.style.zIndex = '9999';
+    page1El.style.backgroundColor = '#ffffff';
+    page1El.style.minWidth = '800px';
     document.body.style.overflow = 'visible';
 
     // Wait for any layout changes
@@ -33,13 +33,13 @@ export const generatePDF = async (players: Player[], selectedTeeBox: TeeBox, gam
     console.log('Capturing canvas...');
 
     // Create canvas with optimized settings
-    const canvas = await html2canvas(element, {
+    const page1Canvas = await html2canvas(page1El, {
       scale: 2, // High DPI for crisp text
       useCORS: true,
       allowTaint: true,
       backgroundColor: '#ffffff',
-      width: element.scrollWidth || element.offsetWidth,
-      height: element.scrollHeight || element.offsetHeight,
+      width: page1El.scrollWidth || page1El.offsetWidth,
+      height: page1El.scrollHeight || page1El.offsetHeight,
       logging: true, // Enable logging to debug
       foreignObjectRendering: true,
       removeContainer: true,
@@ -58,12 +58,12 @@ export const generatePDF = async (players: Player[], selectedTeeBox: TeeBox, gam
     });
 
     // Restore original styles
-    element.style.cssText = originalStyle;
+    page1El.style.cssText = originalStyle;
     document.body.style.overflow = originalBodyOverflow;
 
-    console.log('Canvas created:', canvas.width, 'x', canvas.height);
+    console.log('Page1 canvas created:', page1Canvas.width, 'x', page1Canvas.height);
 
-    if (canvas.width === 0 || canvas.height === 0) {
+    if (page1Canvas.width === 0 || page1Canvas.height === 0) {
       throw new Error('Canvas has no content - check if scorecard is visible');
     }
 
@@ -80,47 +80,36 @@ export const generatePDF = async (players: Player[], selectedTeeBox: TeeBox, gam
     const availableWidth = pdfWidth - (2 * margin);
     const availableHeight = pdfHeight - (2 * margin);
     
-    // Calculate scaling to fit within available space
-    const scaleX = availableWidth / (canvas.width / 2); // Divide by 2 because of scale: 2
-    const scaleY = availableHeight / (canvas.height / 2);
-    const scale = Math.min(scaleX, scaleY);
-    
-    const imgWidth = (canvas.width / 2) * scale;
-    const imgHeight = (canvas.height / 2) * scale;
-    
-    // Center the image
-    const xOffset = margin + (availableWidth - imgWidth) / 2;
-    const yOffset = margin + (availableHeight - imgHeight) / 2;
-
-    console.log('Adding image to PDF...', { imgWidth, imgHeight, xOffset, yOffset });
+    // Helper to add a canvas as a PDF page (or the first page)
+    const addCanvasAsPage = (canvas: HTMLCanvasElement, isFirstPage = false) => {
+      const scaleX = availableWidth / (canvas.width / 2);
+      const scaleY = availableHeight / (canvas.height / 2);
+      const scale = Math.min(scaleX, scaleY);
+      const imgWidth = (canvas.width / 2) * scale;
+      const imgHeight = (canvas.height / 2) * scale;
+      const xOffset = margin + (availableWidth - imgWidth) / 2;
+      const yOffset = margin + (availableHeight - imgHeight) / 2;
+      if (!isFirstPage) {
+        pdf.addPage('a4', 'p');
+      }
+      pdf.addImage(canvas.toDataURL('image/png', 0.95), 'PNG', xOffset, yOffset, imgWidth, imgHeight, undefined, 'MEDIUM');
+    };
 
     // Page 1: .pdf-page1 container
-    pdf.addImage(canvas.toDataURL('image/png', 0.95), 'PNG', xOffset, yOffset, imgWidth, imgHeight, undefined, 'MEDIUM');
+    addCanvasAsPage(page1Canvas, true);
 
     // Page 2: Front 9 section
-    const front = document.querySelector('.pdf-front9') as HTMLElement;
-    if (front) {
+    if (frontEl) {
       await new Promise(resolve => setTimeout(resolve, 100));
-      const frontCanvas = await html2canvas(front, { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
-      const fw = (frontCanvas.width / 2) * scale;
-      const fh = (frontCanvas.height / 2) * scale;
-      const fx = margin + (availableWidth - fw) / 2;
-      const fy = margin + (availableHeight - fh) / 2;
-      pdf.addPage('a4', 'p');
-      pdf.addImage(frontCanvas.toDataURL('image/png', 0.95), 'PNG', fx, fy, fw, fh, undefined, 'MEDIUM');
+      const frontCanvas = await html2canvas(frontEl, { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
+      addCanvasAsPage(frontCanvas);
     }
 
     // Page 3: Back 9 section
-    const back = document.querySelector('.pdf-back9') as HTMLElement;
-    if (back) {
+    if (backEl) {
       await new Promise(resolve => setTimeout(resolve, 100));
-      const backCanvas = await html2canvas(back, { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
-      const bw = (backCanvas.width / 2) * scale;
-      const bh = (backCanvas.height / 2) * scale;
-      const bx = margin + (availableWidth - bw) / 2;
-      const by = margin + (availableHeight - bh) / 2;
-      pdf.addPage('a4', 'p');
-      pdf.addImage(backCanvas.toDataURL('image/png', 0.95), 'PNG', bx, by, bw, bh, undefined, 'MEDIUM');
+      const backCanvas = await html2canvas(backEl, { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
+      addCanvasAsPage(backCanvas);
     }
 
     // Generate filename
