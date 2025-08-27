@@ -246,7 +246,7 @@ export function HoleByHoleScoring({
             variant="outline"
             size="icon"
             onClick={previousHole}
-            disabled={currentHoleIndex === 0}
+            disabled={currentHoleIndex === startHoleIndex}
             className="flex-shrink-0 border-primary/20 hover:bg-primary/10 min-h-11 min-w-11 touch-manipulation"
           >
             <ChevronLeft className="h-5 w-5" />
@@ -311,7 +311,7 @@ export function HoleByHoleScoring({
                 <div className="text-right">
                   <div>{player.totalPoints} pts</div>
                   <div className="text-sm text-muted-foreground">
-                    Thru {currentHoleIndex > 0 ? currentHoleIndex : '-'}
+                    Thru {rotationOffset > 0 ? rotationOffset : '-'}
                   </div>
                 </div>
               </div>
@@ -320,8 +320,8 @@ export function HoleByHoleScoring({
       </Card>
 
       {/* Match Play Status (only for 2 players) */}
-      {players.length === 2 && currentHoleIndex > 0 && (() => {
-        const matchStatus = calculateMatchPlayStatus(players, holes, currentHoleIndex);
+      {players.length === 2 && rotationOffset > 0 && (() => {
+        const matchStatus = calculateMatchPlayStatus(players, holes, rotationOffset);
         
         return (
           <Card className="p-4 bg-card/95 backdrop-blur-sm shadow-lg border-2 border-accent/20">
@@ -335,7 +335,7 @@ export function HoleByHoleScoring({
                 <div className="space-y-2">
                   <div className="text-lg font-semibold text-accent">All Square</div>
                   <div className="text-sm text-muted-foreground">
-                    Match is tied after {currentHoleIndex} hole{currentHoleIndex > 1 ? 's' : ''}
+                    Match is tied after {rotationOffset} hole{rotationOffset > 1 ? 's' : ''}
                   </div>
                 </div>
               ) : (
@@ -345,8 +345,8 @@ export function HoleByHoleScoring({
                   </div>
                   <div className="text-sm text-muted-foreground">
                     {matchStatus.canEnd 
-                      ? `Match can end on hole ${currentHoleIndex + 1}` 
-                      : `After ${currentHoleIndex} hole${currentHoleIndex > 1 ? 's' : ''} • ${matchStatus.holesRemaining} to play`
+                      ? `Match can end on hole ${rotationOffset + 1}` 
+                      : `After ${rotationOffset} hole${rotationOffset > 1 ? 's' : ''} • ${matchStatus.holesRemaining} to play`
                     }
                   </div>
                 </div>
@@ -354,12 +354,14 @@ export function HoleByHoleScoring({
             </div>
 
             {/* Show individual hole results for last 3 holes */}
-            {currentHoleIndex >= 1 && (
+            {rotationOffset >= 1 && (
               <div className="mt-3 pt-3 border-t border-accent/20">
                 <div className="text-xs text-muted-foreground mb-2 text-center">Recent Holes</div>
                 <div className="flex justify-center gap-2">
-                  {Array.from({ length: Math.min(3, currentHoleIndex) }, (_, i) => {
-                    const holeIndex = currentHoleIndex - Math.min(3, currentHoleIndex) + i;
+                  {Array.from({ length: Math.min(3, rotationOffset) }, (_, i) => {
+                    const n = Math.min(3, rotationOffset);
+                    const offset = rotationOffset - n + i;
+                    const holeIndex = (startHoleIndex + offset) % 18;
                     const holeResult = calculateHoleWinner(players, holeIndex, holes);
                     const holeNumber = holes[holeIndex].number;
                     
