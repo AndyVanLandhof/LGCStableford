@@ -67,8 +67,8 @@ export const generatePDF = async (players: Player[], selectedTeeBox: TeeBox, gam
       throw new Error('Canvas has no content - check if scorecard is visible');
     }
 
-    // Create PDF in portrait format
-    const pdf = new jsPDF('p', 'mm', 'a4');
+    // Create PDF in landscape format
+    const pdf = new jsPDF('l', 'mm', 'a4');
     const pdfWidth = pdf.internal.pageSize.getWidth(); // 210mm
     const pdfHeight = pdf.internal.pageSize.getHeight(); // 297mm
     
@@ -91,17 +91,29 @@ export const generatePDF = async (players: Player[], selectedTeeBox: TeeBox, gam
 
     console.log('Adding image to PDF...', { imgWidth, imgHeight, xOffset, yOffset });
 
-    // Add the scorecard image to PDF
-    pdf.addImage(
-      canvas.toDataURL('image/png', 0.95),
-      'PNG',
-      xOffset,
-      yOffset,
-      imgWidth,
-      imgHeight,
-      undefined,
-      'MEDIUM'
-    );
+    // Add page 1: Split content into two halves if very tall, else fit once
+    pdf.addImage(canvas.toDataURL('image/png', 0.95), 'PNG', xOffset, yOffset, imgWidth, imgHeight, undefined, 'MEDIUM');
+
+    // Add page 2 for rules/legend by re-capturing only the legend/summary section if present,
+    // otherwise just duplicate a lighter footer section.
+    const legendSection = document.querySelector('.pdf-page2') as HTMLElement;
+    if (legendSection) {
+      await new Promise(resolve => setTimeout(resolve, 200));
+      const legendCanvas = await html2canvas(legendSection, { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
+      const legendWidth = (legendCanvas.width / 2) * scale;
+      const legendHeight = (legendCanvas.height / 2) * scale;
+      const lx = margin + (availableWidth - legendWidth) / 2;
+      const ly = margin + (availableHeight - legendHeight) / 2;
+      pdf.addPage('a4', 'l');
+      pdf.addImage(legendCanvas.toDataURL('image/png', 0.95), 'PNG', lx, ly, legendWidth, legendHeight, undefined, 'MEDIUM');
+    } else {
+      // Fallback: add a blank page with note
+      pdf.addPage('a4', 'l');
+      pdf.setFontSize(14);
+      pdf.text('Notes and Rules', pdfWidth / 2, margin + 10, { align: 'center' });
+      pdf.setFontSize(10);
+      pdf.text('Stableford Scoring and notes available in the app.', margin, margin + 20);
+    }
 
     // Generate filename
     const date = new Date().toISOString().split('T')[0];
