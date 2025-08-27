@@ -241,18 +241,8 @@ export function HoleByHoleScoring({
     <div className="max-w-2xl mx-auto space-y-4 sm:space-y-6">
       {/* Progress Header */}
       <Card className="p-4 sm:p-6 bg-card/95 backdrop-blur-sm shadow-lg border-2 border-primary/20">
-        <div className="flex items-center justify-between mb-4">
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={previousHole}
-            disabled={currentHoleIndex === startHoleIndex}
-            className="flex-shrink-0 border-primary/20 hover:bg-primary/10 min-h-11 min-w-11 touch-manipulation"
-          >
-            <ChevronLeft className="h-5 w-5" />
-          </Button>
-          
-          <div className="flex-1 text-center px-2 sm:px-4">
+        <div className="mb-4">
+          <div className="text-center px-2 sm:px-4">
             <h2 className="text-primary mb-1 sm:mb-2 text-2xl sm:text-3xl">Hole {holes[currentHoleIndex].number}</h2>
             <h3 className="text-muted-foreground mb-2 sm:mb-3 text-lg sm:text-xl">{holes[currentHoleIndex].name}</h3>
             <div className="flex items-center justify-center gap-2 sm:gap-4 text-sm sm:text-lg text-muted-foreground flex-wrap">
@@ -263,22 +253,12 @@ export function HoleByHoleScoring({
               <span>HCP {holes[currentHoleIndex].handicapIndex}</span>
             </div>
           </div>
-          
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={nextHole}
-            disabled={!holeConfirmed}
-            className="flex-shrink-0 border-primary/20 hover:bg-primary/10 min-h-11 min-w-11 touch-manipulation"
-          >
-            <ChevronRight className="h-5 w-5" />
-          </Button>
         </div>
         
         <div className="space-y-2">
           <div className="flex justify-between text-sm">
             <span>Progress</span>
-            <span>{currentHoleIndex + 1} of 18</span>
+            <span>{rotationOffset + 1} of 18</span>
           </div>
           <Progress value={progress} className="h-3 sm:h-2" />
         </div>
@@ -538,7 +518,7 @@ export function HoleByHoleScoring({
               </div>
             </div>
 
-            {/* Show six points for last 3 holes */}
+            {/* Show six points for last 3 holes with player initials */}
             {rotationOffset >= 1 && (
               <div className="mt-3 pt-3 border-t border-accent/20">
                 <div className="text-xs text-muted-foreground mb-2 text-center">Recent Holes</div>
@@ -554,15 +534,19 @@ export function HoleByHoleScoring({
                       <div key={holeIndex} className="text-xs">
                         <div className="flex justify-between items-center">
                           <span className="text-muted-foreground">H{holeNumber}:</span>
-                          <div className="flex gap-1">
+                          <div className="flex gap-2 items-center">
                             {players.map(player => (
-                              <Badge 
-                                key={player.id}
-                                variant="outline" 
-                                className="text-xs px-1"
-                              >
-                                {sixPointsResult.playerPoints[player.id] || 0}
-                              </Badge>
+                              <div key={player.id} className="flex flex-col items-center">
+                                <span className="text-[10px] text-muted-foreground leading-none mb-0.5">
+                                  {player.name.charAt(0)}
+                                </span>
+                                <Badge 
+                                  variant="outline" 
+                                  className="text-xs px-1"
+                                >
+                                  {sixPointsResult.playerPoints[player.id] || 0}
+                                </Badge>
+                              </div>
                             ))}
                           </div>
                         </div>
